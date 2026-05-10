@@ -22,7 +22,9 @@ public class PrestamoService {
                 prestamo.getIdPresta(),
                 prestamo.getFechaIniPresta(),
                 prestamo.getFechaVencPresta(),
-                prestamo.isDevuelto()
+                prestamo.isDevuelto(),
+                prestamo.getUsuarioId()
+
         );
     }
 
@@ -43,7 +45,8 @@ public class PrestamoService {
                 doto.getIdPresta(),
                 doto.getFechaIniPresta(),
                 doto.getFechaVencPresta(),
-                doto.isDevuelto()
+                doto.isDevuelto(),
+                doto.getUsuarioId()
         );
         return mapToDTO(prestamoRepository.save(prestamo));
     }
@@ -63,4 +66,25 @@ public class PrestamoService {
     }
 
     // FUNCIONES EXTRAS
+
+    public List<PrestamoResponseDTO> obtenerLibrosAtrasados(){
+        return prestamoRepository.obtenerLibrosPorDevolver()
+                .stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public Optional<PrestamoResponseDTO> actualizarCheck(Long id, PrestamoRequestDTO doto){
+        return prestamoRepository.findById(id).map(existente-> {
+            existente.setDevuelto(doto.isDevuelto());
+            return mapToDTO(prestamoRepository.save(existente));
+        });
+    }
+
+    public List<PrestamoResponseDTO> obtenerPorIdUsuario(Long id){
+        return prestamoRepository.findByUsuarioId(id)
+                .stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
 }

@@ -18,4 +18,6 @@ public class PrestamoResponseDTO {
     private LocalDate fechaVencPresta;
 
     private boolean devuelto;
+
+    private Long usuarioId;
 }

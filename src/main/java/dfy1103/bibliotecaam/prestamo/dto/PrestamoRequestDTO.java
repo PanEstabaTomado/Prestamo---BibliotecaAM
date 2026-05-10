@@ -23,4 +23,7 @@ public class PrestamoRequestDTO {
 
     @NotNull(message = "Se debe saber si ha sido devuelto o no.")
     private boolean devuelto;
+
+    @NotNull(message = "El usuarioId no puede estar vacio.")
+    private Long usuarioId;
 }

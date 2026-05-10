@@ -9,9 +9,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface PrestamoRepository extends JpaRepository<Prestamo, Long> {
-    @Query("SELECT p FROM Prestamo p WHERE p.fechaVencPresta > :fecha")
-    List<Prestamo> obtenerLibrosAtrasados(@Param("fecha")LocalDate fecha);
 
-    @Query("SELECT p FROM Prestamo p WHERE p.fechaVencPresta > :fecha AND p.devuelto = false")
-    List<Prestamo> obtenerLibrosPorDevolver(@Param("fecha")LocalDate fecha);
+    @Query("SELECT p FROM Prestamo p WHERE p.devuelto = false")
+    List<Prestamo> obtenerLibrosPorDevolver();
+
+    List<Prestamo> findByUsuarioId(Long id);
+
 }
