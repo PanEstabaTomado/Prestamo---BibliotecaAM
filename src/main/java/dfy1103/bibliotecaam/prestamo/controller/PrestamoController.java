@@ -37,6 +37,11 @@ public class PrestamoController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/usuarios/{id}")
+    public ResponseEntity<List<PrestamoResponseDTO>> obtenerUsuarioId(Long id){
+        return ResponseEntity.ok(prestamoService.obtenerPorIdUsuario(id));
+    }
+
     @PostMapping
     public ResponseEntity<PrestamoResponseDTO> guardar(@Valid @RequestBody PrestamoRequestDTO doto){
         return ResponseEntity.status(201).body(prestamoService.guardar(doto));

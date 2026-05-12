@@ -16,7 +16,14 @@ import java.util.stream.Collectors;
 public class PrestamoService {
     private final PrestamoRepository prestamoRepository;
 
-    // CRUD
+    /* ------------------------------------------------------------------
+     * * CREATE
+     * READ
+     * UPDATE
+     * DELETE
+     * Featuring Doto from (Uma Musume) CompraResponseDTO - CompraRequestDTO
+
+     */
     private PrestamoResponseDTO mapToDTO(Prestamo prestamo){
         return new PrestamoResponseDTO(
                 prestamo.getIdPresta(),
@@ -65,7 +72,10 @@ public class PrestamoService {
         prestamoRepository.deleteById(id);
     }
 
-    // FUNCIONES EXTRAS
+    /* ------------------------------------------------------------------
+     * * FUNCIONES EXTRAS
+     */
+
 
     public List<PrestamoResponseDTO> obtenerLibrosAtrasados(){
         return prestamoRepository.obtenerLibrosPorDevolver()
