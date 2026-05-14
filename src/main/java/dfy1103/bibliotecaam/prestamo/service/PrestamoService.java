@@ -5,16 +5,22 @@ import dfy1103.bibliotecaam.prestamo.dto.PrestamoResponseDTO;
 import dfy1103.bibliotecaam.prestamo.model.Prestamo;
 import dfy1103.bibliotecaam.prestamo.repository.PrestamoRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PrestamoService {
     private final PrestamoRepository prestamoRepository;
+
+    private final WebClient webClient;
 
     /* ------------------------------------------------------------------
      * * CREATE
@@ -31,8 +37,25 @@ public class PrestamoService {
                 prestamo.getFechaVencPresta(),
                 prestamo.isDevuelto(),
                 prestamo.getUsuarioId()
-
         );
+    }
+
+    private void validarUsuario(Long idUsuario) {
+        try {
+            webClient.get()
+                    .uri("/api/biblioteca/usuario/{id}", idUsuario)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+            log.info(">>> Usuario {} validado correctamente (WebClient)", idUsuario);
+
+        } catch (WebClientResponseException.NotFound e) {
+            throw new RuntimeException(
+                    "El Usuario con id " + idUsuario + " no existe en la BD de Usuario.");
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "No se puede conectar con usuario: " + e.getMessage());
+        }
     }
 
     public List<PrestamoResponseDTO> obtenerTodos(){
@@ -48,6 +71,7 @@ public class PrestamoService {
     }
 
     public PrestamoResponseDTO guardar(PrestamoRequestDTO doto){
+        validarUsuario(doto.getUsuarioId());
         Prestamo prestamo = new Prestamo(
                 doto.getIdPresta(),
                 doto.getFechaIniPresta(),
