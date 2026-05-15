@@ -5,7 +5,6 @@ import dfy1103.bibliotecaam.prestamo.dto.PrestamoResponseDTO;
 import dfy1103.bibliotecaam.prestamo.service.PrestamoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/biblioteca/prestamo")
+@RequestMapping("/api/bibliotecaam/prestamo")
 @RequiredArgsConstructor
 public class PrestamoController {
     private final PrestamoService prestamoService;
@@ -32,6 +31,7 @@ public class PrestamoController {
 
     @GetMapping("/{id}")
     public ResponseEntity<PrestamoResponseDTO> obtenerPorId(@PathVariable Long id){
+
         return prestamoService.obtenerPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -44,7 +44,7 @@ public class PrestamoController {
 
     @PostMapping
     public ResponseEntity<PrestamoResponseDTO> guardar(@Valid @RequestBody PrestamoRequestDTO doto){
-        return ResponseEntity.status(201).body(prestamoService.guardar(doto));
+            return ResponseEntity.status(201).body(prestamoService.guardar(doto));
     }
 
     @PutMapping("/{id}")
@@ -55,7 +55,7 @@ public class PrestamoController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("({id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> borrar(@PathVariable Long id){
         if (prestamoService.obtenerPorId(id).isEmpty()){
             Map<String, String> noEncontrado = new HashMap<>();

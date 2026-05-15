@@ -13,7 +13,7 @@ public class AppConfig {
     @Bean
     public WebClient webClient() {
         return WebClient.builder()
-                .baseUrl(usuarioUrl)   // http://localhost:8085 (Cambialo al de prestamo)
+                .baseUrl(usuarioUrl)   // http://localhost:8089
                 .build();
     }
 }

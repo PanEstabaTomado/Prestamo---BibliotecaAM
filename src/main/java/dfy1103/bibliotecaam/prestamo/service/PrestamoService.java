@@ -7,8 +7,8 @@ import dfy1103.bibliotecaam.prestamo.repository.PrestamoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,11 +31,17 @@ public class PrestamoService {
 
      */
     private PrestamoResponseDTO mapToDTO(Prestamo prestamo){
+        String prestamoDevuelto;
+        if (prestamo.isDevuelto()) {
+            prestamoDevuelto = "Libro devuelto";
+        }else {
+            prestamoDevuelto = "Libro no devuelto";
+        }
         return new PrestamoResponseDTO(
                 prestamo.getIdPresta(),
                 prestamo.getFechaIniPresta(),
                 prestamo.getFechaVencPresta(),
-                prestamo.isDevuelto(),
+                prestamoDevuelto,
                 prestamo.getUsuarioId()
         );
     }
@@ -43,13 +49,13 @@ public class PrestamoService {
     private void validarUsuario(Long idUsuario) {
         try {
             webClient.get()
-                    .uri("/api/biblioteca/usuario/{id}", idUsuario)
+                    .uri("/api/bibliotecaam/usuario/{id}", idUsuario)
                     .retrieve()
                     .bodyToMono(String.class)
                     .block();
             log.info(">>> Usuario {} validado correctamente (WebClient)", idUsuario);
 
-        } catch (WebClientResponseException.NotFound e) {
+        } catch (HttpClientErrorException.NotFound e) {
             throw new RuntimeException(
                     "El Usuario con id " + idUsuario + " no existe en la BD de Usuario.");
         } catch (Exception e) {
@@ -73,7 +79,7 @@ public class PrestamoService {
     public PrestamoResponseDTO guardar(PrestamoRequestDTO doto){
         validarUsuario(doto.getUsuarioId());
         Prestamo prestamo = new Prestamo(
-                doto.getIdPresta(),
+                null,
                 doto.getFechaIniPresta(),
                 doto.getFechaVencPresta(),
                 doto.isDevuelto(),
@@ -84,7 +90,6 @@ public class PrestamoService {
 
     public Optional<PrestamoResponseDTO> actualizar(Long id, PrestamoRequestDTO doto){
         return prestamoRepository.findById(id).map(existente-> {
-            existente.setIdPresta(doto.getIdPresta());
             existente.setFechaIniPresta(doto.getFechaIniPresta());
             existente.setFechaVencPresta(doto.getFechaVencPresta());
             existente.setDevuelto(doto.isDevuelto());

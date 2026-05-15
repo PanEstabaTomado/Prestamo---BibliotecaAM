@@ -12,16 +12,13 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class PrestamoRequestDTO {
 
-    @NotNull(message = "El id no puede estar vacio.")
-    private Long idPresta;
-
     @NotNull(message = "La fecha de inicio del prestamo no puede estar vacia.")
     private LocalDate fechaIniPresta;
 
     @NotNull(message = "La fecha de vencimiento del prestamo no puede estar vacia.")
     private LocalDate fechaVencPresta;
 
-    @NotNull(message = "Se debe saber si ha sido devuelto o no.")
+    @NotNull(message = "Se debe saber si ha sido devuelto o no (true o false).")
     private boolean devuelto;
 
     @NotNull(message = "El usuarioId no puede estar vacio.")
