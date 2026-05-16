@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.util.List;
 import java.util.Optional;
@@ -55,7 +56,7 @@ public class PrestamoService {
                     .block();
             log.info(">>> Usuario {} validado correctamente (WebClient)", idUsuario);
 
-        } catch (HttpClientErrorException.NotFound e) {
+        } catch (WebClientResponseException.NotFound e) {
             throw new RuntimeException(
                     "El Usuario con id " + idUsuario + " no existe en la BD de Usuario.");
         } catch (Exception e) {
@@ -90,9 +91,11 @@ public class PrestamoService {
 
     public Optional<PrestamoResponseDTO> actualizar(Long id, PrestamoRequestDTO doto){
         return prestamoRepository.findById(id).map(existente-> {
+            validarUsuario(doto.getUsuarioId());
             existente.setFechaIniPresta(doto.getFechaIniPresta());
             existente.setFechaVencPresta(doto.getFechaVencPresta());
             existente.setDevuelto(doto.isDevuelto());
+            existente.setUsuarioId(doto.getUsuarioId());
             return mapToDTO(prestamoRepository.save(existente));
                 });
     }
