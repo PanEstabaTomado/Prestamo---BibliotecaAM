@@ -33,7 +33,7 @@ public class PrestamoService {
      */
     private PrestamoResponseDTO mapToDTO(Prestamo prestamo){
         String prestamoDevuelto;
-        if (prestamo.isDevuelto()) {
+        if (prestamo.getDevuelto().equals(true)) {
             prestamoDevuelto = "Libro devuelto";
         }else {
             prestamoDevuelto = "Libro no devuelto";
@@ -83,7 +83,7 @@ public class PrestamoService {
                 null,
                 doto.getFechaIniPresta(),
                 doto.getFechaVencPresta(),
-                doto.isDevuelto(),
+                doto.getDevuelto(),
                 doto.getUsuarioId()
         );
         return mapToDTO(prestamoRepository.save(prestamo));
@@ -94,7 +94,7 @@ public class PrestamoService {
             validarUsuario(doto.getUsuarioId());
             existente.setFechaIniPresta(doto.getFechaIniPresta());
             existente.setFechaVencPresta(doto.getFechaVencPresta());
-            existente.setDevuelto(doto.isDevuelto());
+            existente.setDevuelto(doto.getDevuelto());
             existente.setUsuarioId(doto.getUsuarioId());
             return mapToDTO(prestamoRepository.save(existente));
                 });
@@ -116,12 +116,12 @@ public class PrestamoService {
                 .collect(Collectors.toList());
     }
 
-    public Optional<PrestamoResponseDTO> actualizarCheck(Long id, PrestamoRequestDTO doto){
+    /*public Optional<PrestamoResponseDTO> actualizarCheck(Long id, PrestamoRequestDTO doto){
         return prestamoRepository.findById(id).map(existente-> {
-            existente.setDevuelto(doto.isDevuelto());
+            existente.setDevuelto(doto.getDevuelto());
             return mapToDTO(prestamoRepository.save(existente));
         });
-    }
+    }*/
 
     public List<PrestamoResponseDTO> obtenerPorIdUsuario(Long id){
         return prestamoRepository.findByUsuarioId(id)

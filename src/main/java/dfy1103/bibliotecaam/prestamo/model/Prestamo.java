@@ -22,12 +22,11 @@ public class Prestamo {
     @Column(nullable = false)
     private LocalDate fechaIniPresta;
 
-
     @Column(nullable = false)
     private LocalDate fechaVencPresta;
 
     @Column(nullable = false)
-    private  boolean devuelto;
+    private  Boolean devuelto;
 
     @Column(name = "usuario_id",nullable = false)
     private Long usuarioId;

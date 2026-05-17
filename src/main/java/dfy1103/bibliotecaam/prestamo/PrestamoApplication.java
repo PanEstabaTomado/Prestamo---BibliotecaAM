@@ -5,7 +5,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 /*
-* * NO ACTIVES ESTE MICRO SERVICIO HASTA QUE HAYAS ACTIVADO PRIMERO EL DE USUARIO
+--------------------------------------- AVISO DE UTILIDAD -------------------------------
+* * * * * NO ACTIVES ESTE MICRO SERVICIO HASTA QUE HAYAS ACTIVADO PRIMERO EL DE USUARIO
+* * VAS A TENER PROBLEMAS AL CREAR Y MODIFICAR COSAS DE TU MS.
+
  */
 public class PrestamoApplication {
 
