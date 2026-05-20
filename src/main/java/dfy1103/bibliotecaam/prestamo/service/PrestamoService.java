@@ -21,7 +21,9 @@ import java.util.stream.Collectors;
 public class PrestamoService {
     private final PrestamoRepository prestamoRepository;
 
-    private final WebClient webClient;
+    private final WebClient webClientUsuario;
+
+    private final WebClient webClientLibro;
 
     /* ------------------------------------------------------------------
      * * CREATE
@@ -43,13 +45,14 @@ public class PrestamoService {
                 prestamo.getFechaIniPresta(),
                 prestamo.getFechaVencPresta(),
                 prestamoDevuelto,
-                prestamo.getUsuarioId()
+                prestamo.getUsuarioId(),
+                prestamo.getIdLibro()
         );
     }
 
     private void validarUsuario(Long idUsuario) {
         try {
-            webClient.get()
+            webClientUsuario.get()
                     .uri("/api/bibliotecaam/usuario/{id}", idUsuario)
                     .retrieve()
                     .bodyToMono(String.class)
@@ -62,6 +65,24 @@ public class PrestamoService {
         } catch (Exception e) {
             throw new RuntimeException(
                     "No se puede conectar con usuario: " + e.getMessage());
+        }
+    }
+
+    private void validarLibro(Long idLibro) {
+        try {
+            webClientLibro.get()
+                    .uri("/api/bibliotecaam/libro/{id}", idLibro)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+            log.info(">>> Usuario {} validado correctamente (WebClient)", idLibro);
+
+        } catch (WebClientResponseException.NotFound e) {
+            throw new RuntimeException(
+                    "El Libro con id " + idLibro + " no existe en la BD de Libro.");
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "No se puede conectar con Libro: " + e.getMessage());
         }
     }
 
@@ -79,12 +100,14 @@ public class PrestamoService {
 
     public PrestamoResponseDTO guardar(PrestamoRequestDTO doto){
         validarUsuario(doto.getUsuarioId());
+        validarLibro(doto.getIdLibro());
         Prestamo prestamo = new Prestamo(
                 null,
                 doto.getFechaIniPresta(),
                 doto.getFechaVencPresta(),
                 doto.getDevuelto(),
-                doto.getUsuarioId()
+                doto.getUsuarioId(),
+                doto.getIdLibro()
         );
         return mapToDTO(prestamoRepository.save(prestamo));
     }
@@ -92,10 +115,12 @@ public class PrestamoService {
     public Optional<PrestamoResponseDTO> actualizar(Long id, PrestamoRequestDTO doto){
         return prestamoRepository.findById(id).map(existente-> {
             validarUsuario(doto.getUsuarioId());
+            validarLibro(doto.getIdLibro());
             existente.setFechaIniPresta(doto.getFechaIniPresta());
             existente.setFechaVencPresta(doto.getFechaVencPresta());
             existente.setDevuelto(doto.getDevuelto());
             existente.setUsuarioId(doto.getUsuarioId());
+            existente.setIdLibro(doto.getIdLibro());
             return mapToDTO(prestamoRepository.save(existente));
                 });
     }

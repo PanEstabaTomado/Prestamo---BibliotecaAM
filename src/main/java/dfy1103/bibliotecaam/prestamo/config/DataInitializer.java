@@ -23,10 +23,10 @@ public class DataInitializer implements CommandLineRunner {
 
         log.info("DataInitializer: Base de Datos vacia, inicializando la carga de datos iniciales.");
 
-        prestamoRepository.save(new Prestamo(null, LocalDate.of(2006,2,1),LocalDate.of(2006,5,1) ,false,1L));
+        prestamoRepository.save(new Prestamo(null, LocalDate.of(2006,2,1),LocalDate.of(2006,5,1) ,false,1L,1L));
 
-        prestamoRepository.save(new Prestamo(null, LocalDate.of(2006,1,1),LocalDate.of(2006,4,1) ,false,1L));
+        prestamoRepository.save(new Prestamo(null, LocalDate.of(2006,1,1),LocalDate.of(2006,4,1) ,false,1L,2L));
 
-        prestamoRepository.save(new Prestamo(null, LocalDate.of(2006,5,20),LocalDate.of(2007,8,20) ,false,2L));
+        prestamoRepository.save(new Prestamo(null, LocalDate.of(2006,5,20),LocalDate.of(2007,8,20) ,false,2L,3L));
     }
 }

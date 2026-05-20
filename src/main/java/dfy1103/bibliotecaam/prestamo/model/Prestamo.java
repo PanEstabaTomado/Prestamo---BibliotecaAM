@@ -30,5 +30,8 @@ public class Prestamo {
 
     @Column(name = "usuario_id",nullable = false)
     private Long usuarioId;
+
+    @Column(nullable = false)
+    private Long idLibro;
     // se conecta con id usuario y id libro
 }

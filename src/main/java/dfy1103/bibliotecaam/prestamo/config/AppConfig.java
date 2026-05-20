@@ -10,10 +10,20 @@ public class AppConfig {
     @Value("${usuario.url}")
     private String usuarioUrl;
 
+    @Value("${libro.url}")
+    private String libroUrl;
+
     @Bean
-    public WebClient webClient() {
+    public WebClient webClientUsuario() {
         return WebClient.builder()
                 .baseUrl(usuarioUrl)   // http://localhost:8089
+                .build();
+    }
+
+    @Bean
+    public WebClient webClientLibro() {
+        return WebClient.builder()
+                .baseUrl(libroUrl)   // http://localhost:8089
                 .build();
     }
 }

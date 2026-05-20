@@ -19,4 +19,6 @@ public class PrestamoResponseDTO {
     private String devuelto;
 
     private Long usuarioId;
+
+    private Long idLibro;
 }

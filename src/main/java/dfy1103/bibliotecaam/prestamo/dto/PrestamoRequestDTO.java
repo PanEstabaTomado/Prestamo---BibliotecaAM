@@ -23,4 +23,7 @@ public class PrestamoRequestDTO {
 
     @NotNull(message = "El usuarioId no puede estar vacio.")
     private Long usuarioId;
+
+    @NotNull(message = "El id del libro prestado debe aparecer, ¿como vamos a saber que libro se llevo si no?")
+    private Long idLibro;
 }
