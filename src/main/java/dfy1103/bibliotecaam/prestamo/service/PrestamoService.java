@@ -33,7 +33,7 @@ public class PrestamoService {
      */
     private PrestamoResponseDTO mapToDTO(Prestamo prestamo){
         String prestamoDevuelto;
-        if (prestamo.getDevuelto().equals(true)) {
+        if (prestamo.getDevuelto() == true) {
             prestamoDevuelto = "Libro devuelto";
         }else {
             prestamoDevuelto = "Libro no devuelto";
