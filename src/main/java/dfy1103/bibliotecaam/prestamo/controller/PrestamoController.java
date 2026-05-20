@@ -5,10 +5,12 @@ import dfy1103.bibliotecaam.prestamo.dto.PrestamoResponseDTO;
 import dfy1103.bibliotecaam.prestamo.service.PrestamoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -56,16 +58,17 @@ public class PrestamoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> borrar(@PathVariable Long id){
+    public ResponseEntity<Map<String,String>> borrar(@PathVariable Long id){
         if (prestamoService.obtenerPorId(id).isEmpty()){
-            Map<String, String> noEncontrado = new HashMap<>();
-            noEncontrado.put("ERROR: ","¡El Prestamo con el id "+ id + " no fue encontrado!");
-            return ResponseEntity.status(404).body(noEncontrado);
+            Map<String, String> borrado = new LinkedHashMap<>();
+            borrado.put("¡ERROR! ", "¡El prestamo con id "+id+" no fue encontrado!");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(borrado);
+        }else {
+            prestamoService.eliminar(id);
+            Map<String, String> borrado = new LinkedHashMap<>();
+            borrado.put("¡EXITO! ", "¡El prestamo fue eliminado con exito!");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(borrado);
         }
-        prestamoService.eliminar(id);
-        Map<String, String> eliminado = new HashMap<>();
-        eliminado.put("¡EXITO! ","¡El Prestamo fue eliminado con exito!");
-        return ResponseEntity.ok(eliminado);
     }
 
 
