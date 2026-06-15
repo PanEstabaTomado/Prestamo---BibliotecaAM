@@ -1,5 +1,6 @@
 package dfy1103.bibliotecaam.prestamo.controller;
 
+import dfy1103.bibliotecaam.prestamo.assembler.PrestamoModelAssembler;
 import dfy1103.bibliotecaam.prestamo.dto.PrestamoRequestDTO;
 import dfy1103.bibliotecaam.prestamo.dto.PrestamoResponseDTO;
 import dfy1103.bibliotecaam.prestamo.model.Prestamo;
@@ -12,6 +13,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +25,10 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/api/bibliotecaam/prestamo")
@@ -28,15 +37,22 @@ import java.util.Map;
 public class PrestamoController {
     private final PrestamoService prestamoService;
 
+    @Autowired
+    private PrestamoModelAssembler assembler;
 
-    @GetMapping
+    @GetMapping(produces = MediaTypes.HAL_JSON_VALUE)
     @Operation(summary = "Obtener todos los prestamos", description = "Obtiene una lista de todos los prestamos")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Operacion exitosa"),
             @ApiResponse(responseCode = "404", description = "Prestamo no encontrado")
     })
-    public ResponseEntity<List<PrestamoResponseDTO>> obtenerTodos(){
-        return ResponseEntity.ok(prestamoService.obtenerTodos());
+    public ResponseEntity<CollectionModel<EntityModel<PrestamoResponseDTO>>> obtenerTodos(){
+        List<EntityModel<PrestamoResponseDTO>> prestamos = prestamoService.obtenerTodos().stream()
+                .map(assembler::toModel)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(CollectionModel.of(prestamos,
+                linkTo(methodOn(PrestamoController.class).obtenerTodos()).withSelfRel()));
     }
 
     @GetMapping("/atrasados")
@@ -45,19 +61,24 @@ public class PrestamoController {
             @ApiResponse(responseCode = "200", description = "Operacion exitosa"),
             @ApiResponse(responseCode = "404", description = "Prestamo no encontrado")
     })
-    public ResponseEntity<List<PrestamoResponseDTO>> obtenerLibrosAtrasados(){
-        return ResponseEntity.ok(prestamoService.obtenerLibrosAtrasados());
-    }
+    public ResponseEntity<CollectionModel<EntityModel<PrestamoResponseDTO>>> obtenerLibrosAtrasados(){
+        List<EntityModel<PrestamoResponseDTO>> prestamos = prestamoService.obtenerLibrosAtrasados().stream()
+                .map(assembler::toModel)
+                .collect(Collectors.toList());
 
-    @GetMapping("/{id}")
+        return ResponseEntity.ok(CollectionModel.of(prestamos,
+                linkTo(methodOn(PrestamoController.class).obtenerLibrosAtrasados()).withSelfRel()));      }
+
+    @GetMapping(value = "/{id}", produces = MediaTypes.HAL_JSON_VALUE)
     @Operation(summary = "Obtener prestamo por id", description = "Obtiene prestamo por id.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Operacion exitosa"),
             @ApiResponse(responseCode = "404", description = "Prestamo no encontrado")
     })
-    public ResponseEntity<PrestamoResponseDTO> obtenerPorId(@PathVariable Long id){
+    public ResponseEntity<EntityModel<PrestamoResponseDTO>>  obtenerPorId(@PathVariable Long id){
 
         return prestamoService.obtenerPorId(id)
+                .map(assembler::toModel)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -68,8 +89,13 @@ public class PrestamoController {
             @ApiResponse(responseCode = "200", description = "Operacion exitosa"),
             @ApiResponse(responseCode = "404", description = "Prestamo no encontrado")
     })
-    public ResponseEntity<List<PrestamoResponseDTO>> obtenerUsuarioId(Long id){
-        return ResponseEntity.ok(prestamoService.obtenerPorIdUsuario(id));
+    public ResponseEntity<CollectionModel<EntityModel<PrestamoResponseDTO>>> obtenerUsuarioId(Long id){
+        List<EntityModel<PrestamoResponseDTO>> prestamos = prestamoService.obtenerPorIdUsuario(id).stream()
+                .map(assembler::toModel)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(CollectionModel.of(prestamos,
+                linkTo(methodOn(PrestamoController.class).obtenerUsuarioId(id)).withSelfRel()));
     }
 
     @PostMapping
@@ -79,8 +105,9 @@ public class PrestamoController {
             @ApiResponse(responseCode = "400", description = "Error al ingresar parametros. Revise si ingreso todos los parametros solicitados."),
             @ApiResponse(responseCode = "403", description = "No tienes permiso para hacer el cambio.")
     })
-    public ResponseEntity<PrestamoResponseDTO> guardar(@Valid @RequestBody PrestamoRequestDTO doto){
-            return ResponseEntity.status(201).body(prestamoService.guardar(doto));
+    public ResponseEntity<EntityModel<PrestamoResponseDTO>> guardar(@Valid @RequestBody PrestamoRequestDTO doto){
+        PrestamoResponseDTO nuevoPrestamo = prestamoService.guardar(doto);
+        return ResponseEntity.status(201).body(assembler.toModel(nuevoPrestamo));
     }
 
     @PutMapping("/{id}")
@@ -91,9 +118,10 @@ public class PrestamoController {
                             schema = @Schema(implementation = Prestamo.class))),
             @ApiResponse(responseCode = "404", description = "El id del prestamo no existe.")
     })
-    public ResponseEntity<PrestamoResponseDTO> actualizar(@PathVariable Long id,
+    public ResponseEntity<EntityModel<PrestamoResponseDTO>> actualizar(@PathVariable Long id,
                                                           @Valid @RequestBody PrestamoRequestDTO doto) {
         return prestamoService.actualizar(id, doto)
+                .map(assembler::toModel)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
