@@ -43,7 +43,6 @@ class PrestamoServiceTest {
     @MockitoBean(name = "webClientLibro")
     private WebClient webClientLibro;
 
-    // Mocks genéricos para simular la interfaz fluida de WebClient
     @SuppressWarnings("rawtypes")
     private WebClient.RequestHeadersUriSpec requestHeadersUriSpecMock;
     @SuppressWarnings("rawtypes")

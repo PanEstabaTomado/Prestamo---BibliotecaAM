@@ -52,11 +52,9 @@ class PrestamoControllerTest {
 
     @BeforeEach
     void setUp() {
-        // Inicialización usando los DTOs reales de Préstamos
         p1 = new PrestamoResponseDTO(1L, LocalDate.now(), LocalDate.now().plusDays(7), "No Devuelto", 100L, 500L);
         p2 = new PrestamoResponseDTO(2L, LocalDate.now(), LocalDate.now().plusDays(7), "Devuelto", 101L, 501L);
 
-        // Mockear el comportamiento del Assembler HATEOAS para envolver las respuestas
         Mockito.when(assembler.toModel(eq(p1))).thenReturn(
                 EntityModel.of(p1, linkTo(methodOn(PrestamoController.class).obtenerPorId(1L)).withSelfRel())
         );
